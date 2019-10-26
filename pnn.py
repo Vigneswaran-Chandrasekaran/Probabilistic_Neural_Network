@@ -1,40 +1,80 @@
-import xlrd,math
-from sklearn.metrics import confusion_matrix
-unknown_vector=list();main_list=list();y_actu=list();y_pred=list()
-inside_sum=0;sum=0;accuracy_count=0
-sample_class_count=input("No. of samples class-wise in training samples: ")         #check the data set that each class contains this many samples
-no_of_class=input("No of classes overall: ")
-workbook=xlrd.open_workbook("samp.xlsx")                                            #contains extrated features with first row ie '0' containing function name and function 1 starts from col '0'
-sheet=workbook.sheet_by_index(0)
-row_count=sheet.nrows
-col_count=sheet.ncols
-for alpha in range(no_of_class*sample_class_count+1,row_count):
-    for c in range(0,col_count-1):
-        unknown_vector.append(sheet.cell_value(alpha,c))
-    unknown_vector.append(sheet.cell_value(alpha,col_count))
-    for row in range(1,no_of_class*sample_class_count+1):
-        cool=0
-        for col in range(0,col_count-1):
-            inside_sum+=(sheet.cell_value(row,col)-unknown_vector[cool])**2
-            cool+=1
-        sum+=math.exp(-(inside_sum)/(2.0))
-        inside_sum=0
-        if row%sample_class_count==0:
-            main_list.append((1/float(sample_class_count))*sum)
-            sum=0
-    print(main_list)
-    y_pred.append(main_list.index(max(main_list))+1)
-    print("Maximum value belongs to Class"+str(main_list.index(max(main_list))+1))
-    if main_list.index(max(main_list))+1==unknown_vector[len(unknown_vector)-1]:
-        accuracy_count+=1
-    else:
-        print("Class identification mismatch for",unknown_vector)
-    del main_list[:]
-    del unknown_vector[:]
-accuracy_count=(accuracy_count/50.0)                #50 test samples
-print ("Accuracy=",accuracy_count)
-#return accuracy_count
-for row in range(no_of_class*sample_class_count+1,row_count):
-    y_actu.append(sheet.cell_value(row,col_count))
-print "Confusion Matrix: "
-print(confusion_matrix(y_actu, y_pred))
+"""
+Python code for Probabilistic Neural Network (PNN), which 
+can be used for classification and pattern-recognition task.
+PNN doesn't actually train on dataset instead it classify the 
+test data on the flow, by estimating each class's posterior
+probability approximated by Parzen window and the suitable class
+is selected using Baye's Rule. It was introduced by D.F. Specht 
+in 1966.
+
+References:
+1) Original work: https://www.sciencedirect.com/science/article/abs/pii/089360809090049Q
+2) https://en.wikipedia.org/wiki/Probabilistic_neural_network
+
+Architecture:
+It have four layers:
+1. Input layer
+2. Patter layer
+3. Summation layer
+4. Output layer
+"""
+import numpy as np
+class Probabilistic_Neural_Network(self):
+    def __init__(self, X, Y, kernel = 'gauss', sigma = 2):
+        """
+        Constructor to create probability distribution for 
+        the given data with given parent probability distribution
+        function (pdf).
+
+        Parameters
+        ----------
+        X : Numpy array
+        Input data to form probability distribution
+
+        Y : Numpy array
+        Target class labels
+
+        kernel : string (Optional)
+        Select the type of parent pdf from available functions
+
+        sigma : int
+        Smoothning parameter
+        """
+        self.X = self.normalize(X)
+        self.Y = self.Y
+        # TODO: check validity of kernel function
+        # TODO: check validitiy of each variables
+        self.kernel = kernel
+        self.sigmal = sigma
+    
+    def normalize(self, vector):
+        vector = vector.T
+        return ((vector - np.amin(vector, axis = 1)) / (np.amax(vector, axis = 1)- np.amin(vector, axis = 1))).T
+
+    def predict(self, X_test):
+        """
+        Function to predict the class for input unknown vector
+
+        Parameters
+        ----------
+        X_test : Numpy array
+        Test vector for which class has to be predicted
+
+        Returns
+        -------
+        Y_pred : Numpy array
+        Predicted class labels
+        """
+        X_test = self.normalize(X_test)
+        if self.kernel == 'gauss':
+            Y_pred = []
+            for unknown_vector in X_test:
+                class_probability_score = []
+                for class_label in np.unique(self.Y):
+                    class_samples = self.X[np.where(self.Y == class_label), :]
+                    distance_metric =  np.sum(np.exp( -1 * ((class_samples - unknown_vector)**2) / (2 * self.sigma**2)))
+                    score = (1/np.where(self.Y == class_label).shape[0]) * distance_metric
+                    class_probability_score.append(score)
+                winner_class = np.unique(self.Y)[class_probability_score.index(max(class_probability_score))]
+                Y_pred.append(winner_class)
+        return np.array(Y_pred)

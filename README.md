@@ -1,17 +1,19 @@
-# Probablistic-Neural-Network
-PNN simple code for finding accuracy and Confusion Matrix. 
+##### Probabilistic Neural Network (PNN)
+Python code for Probabilistic Neural Network (PNN), which 
+can be used for classification and pattern-recognition task.
+PNN doesn't actually train on dataset instead it classify the 
+test data on the flow, by estimating each class's posterior
+probability approximated by Parzen window and the suitable class
+is selected using Baye's Rule. It was introduced by D.F. Specht 
+in 1966.
 
-This simple code for PNN gets two inputs from the user.
-1)sample_class_count=gets number of training samples in each class.
-2)no_of_class=gets total number of classes in your model.
+###### References:
+1) Original work: https://www.sciencedirect.com/science/article/abs/pii/089360809090049Q
+2) https://en.wikipedia.org/wiki/Probabilistic_neural_network
 
-The input file is of .xlsx form (or) it can be used in other according to need (for .csv use pandas dataframe).
-
-First row of the dataset can contain the feature names for easier working with the dataset and for feature selection.
-
-The input dataset file must have testing vectors after (sample_class_count*no_of_class) ie first row of test sample must start from 451 for (90-10) 5-multiclass 
-classfication.
-
-No sigma parameter is implemented, if its needed it can easily be added direct. Since the code reflects direct implementaion of PNN formula.
-
-
+###### Architecture:
+It have four layers:
+1. Input layer
+2. Patter layer
+3. Summation layer
+4. Output layer
