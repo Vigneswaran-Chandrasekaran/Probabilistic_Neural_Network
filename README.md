@@ -1,5 +1,5 @@
 ##### Probabilistic Neural Network (PNN)
-Python code for Probabilistic Neural Network (PNN), which 
+Python implementation for Probabilistic Neural Network (PNN), which 
 can be used for classification and pattern-recognition task.
 PNN doesn't actually train on dataset instead it classify the 
 test data on the flow, by estimating each class's posterior
